@@ -1,18 +1,24 @@
 // Code goes here!
 
-class Department {
+abstract class Department {
     // private readonly name:string;
-     private employees: string[] = [];
-    
-    constructor(private readonly id: string, public name:string) {
+    static fiscalYear = 2020;
+    protected employees: string[] = [];
+
+    constructor(protected readonly id: string, public name: string) {
         this.name = name;
     }
 
-    describe(this:Department){//teling this to refer to Department
-        console.log('Department: ' + this.name  + this.id);
+    abstract describe(this: Department):void; //teling this to refer to Department
+        // console.log('Department: ' + this.name + this.id);
+    
+
+    static createEmployee (name: string){
+        return {name:name};
     }
 
-    hell = () =>{
+
+    hell = () => {
         console.log(this.name);
     }
 
@@ -21,29 +27,104 @@ class Department {
         this.employees.push(employee);
     }
 
-    printEmployeeInformation(){
+    printEmployeeInformation() {
         console.log(this.employees.length);
         console.log(this.employees);
     }
 
 }
 
+class ItDepartment extends Department {
+    constructor(id: string, public admins: string[]) {//public creates this.admin= admin automatically
+        super(id, 'IT');//copy attributes from parent
+        //new attributes after super
+    }
+    describe(){
+        console.log('IT Departmnet - ID; ' , this.id); 
+    }
+}
 
-const accounting = new Department( ' d1','IT');
 
-// console.log(accounting);
-// accounting.hell();
-// const accountingCpy = {name: 'DUMMY', describe: accounting.describe, hell: accounting.hell};
+class AccountinDepartment extends Department {
+
+    private lastReport: string;
+
+
+    get mostRecentReport (){
+        //some logic
+        if(this.lastReport){
+            return  this.lastReport;
+        }
+        throw new Error('No report found.');
+    }
+
+    describe(){
+        console.log('Accounting department -id:' +  this.id);
+    }
+
+    set mostRecentReport(value: string){
+        if(!value){ 
+            throw new Error('please add a report');
+        }
+        this.addReport(value);
+    }
+
+    constructor(id: string, private reports: string[]) {
+        super(id, 'ACCOUNTING')
+        this.lastReport = reports[0];
+    }
+
+    addEmployee(name: string) {
+        if (name === 'Max') {
+            return;
+        }
+        this.employees.push(name);
+    }
+
+    addReport(text: string) {
+        this.reports.push(text);
+        this.lastReport = text;
+    }
+
+    printReports() {
+        console.log(this.reports);
+    }
+}
+
+const it = new ItDepartment('D2', ['MaXITO']);
+
+// console.log(it);
+// it.hell();
+// const accountingCpy = {name: 'DUMMY', describe: it.describe, hell: it.hell};
 // accountingCpy.describe();//el contexto del this cambi
-// //a a accounting a este objecto
+// //a a it a este objecto
 // accountingCpy.hell();
 
-accounting.addEmployee('Hector');
-accounting.addEmployee('Manu');
-//accounting.employees[2] = 'Anna'; 
-
-accounting.addEmployee('Hector');
-accounting.describe();
-accounting.printEmployeeInformation();
+it.addEmployee('Hector');
+it.addEmployee('Manu');
+//it.employees[2] = 'Anna'; 
 
 
+it.describe();
+it.name = 'NEW NAME';
+it.printEmployeeInformation();
+console.log(it);
+
+const accounting_object = new AccountinDepartment('D2', []);
+
+accounting_object.mostRecentReport = 'hello'
+accounting_object.addReport('Something went wrong...');
+console.log(accounting_object.mostRecentReport);
+accounting_object.addEmployee('MANU');
+accounting_object.printReports();
+accounting_object.printEmployeeInformation();
+
+
+//Static Method
+const x = Department.createEmployee('BEBESITO');
+console.log(x);
+console.log(Department.fiscalYear);
+
+
+//Abstract Classes
+accounting_object.describe();
