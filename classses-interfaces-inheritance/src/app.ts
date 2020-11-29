@@ -48,7 +48,7 @@ class ItDepartment extends Department {
 class AccountinDepartment extends Department {
 
     private lastReport: string;
-
+    private static instance: AccountinDepartment;//store classs instace
 
     get mostRecentReport (){
         //some logic
@@ -69,9 +69,18 @@ class AccountinDepartment extends Department {
         this.addReport(value);
     }
 
-    constructor(id: string, private reports: string[]) {
+    private constructor(id: string, private reports: string[]) {
         super(id, 'ACCOUNTING')
         this.lastReport = reports[0];
+    }
+
+    static getInstance(){
+        if(this.instance){//when inside static its ok
+            return this.instance;
+        }
+        //wil only run once
+        this.instance = new AccountinDepartment('d2', []);
+        return this.instance;
     }
 
     addEmployee(name: string) {
@@ -110,8 +119,8 @@ it.name = 'NEW NAME';
 it.printEmployeeInformation();
 console.log(it);
 
-const accounting_object = new AccountinDepartment('D2', []);
-
+const accounting_object = AccountinDepartment.getInstance();
+console.log(AccountinDepartment.getInstance() == AccountinDepartment.getInstance());
 accounting_object.mostRecentReport = 'hello'
 accounting_object.addReport('Something went wrong...');
 console.log(accounting_object.mostRecentReport);
