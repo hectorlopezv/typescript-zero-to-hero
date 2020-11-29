@@ -1,139 +1,52 @@
-// Code goes here!
+//Interfaces
 
-abstract class Department {
-    // private readonly name:string;
-    static fiscalYear = 2020;
-    protected employees: string[] = [];
+//TYPE WAY
+type addFn = (a: number, b: number) => number;
 
-    constructor(protected readonly id: string, public name: string) {
-        this.name = name;
-    }
+let add: addFn;
+add = (n1:number, n2:number) => {return n1 + n2};
 
-    abstract describe(this: Department):void; //teling this to refer to Department
-        // console.log('Department: ' + this.name + this.id);
-    
-
-    static createEmployee (name: string){
-        return {name:name};
-    }
+//INTERFACE WAY DEFINE STRUCUTURE OF FUNCTION
+interface addFnInterfaceWay{
+    (a: number, b: number):number; //anonymous function defined structure function type
+}
+let add_2: addFnInterfaceWay;
+add_2 = (n1:number, n2:number) => {return n1 + n2};
 
 
-    hell = () => {
-        console.log(this.name);
-    }
-
-    addEmployee(employee: string) {
-        //validation etc
-        this.employees.push(employee);
-    }
-
-    printEmployeeInformation() {
-        console.log(this.employees.length);
-        console.log(this.employees);
-    }
-
+interface Named {
+    readonly name: string;
 }
 
-class ItDepartment extends Department {
-    constructor(id: string, public admins: string[]) {//public creates this.admin= admin automatically
-        super(id, 'IT');//copy attributes from parent
-        //new attributes after super
-    }
-    describe(){
-        console.log('IT Departmnet - ID; ' , this.id); 
-    }
+interface Person {
+    name: string;
+    age?: number; //optional paramater
+    greet(phrase: string): void;
+}
+
+interface Greetable extends Named {// injecting what is inside Named in Here
+    greet(phrase: string): void;
 }
 
 
-class AccountinDepartment extends Department {
+//Interfaces in Classes
+class Persons implements Greetable{
+    constructor(public name: string, private readonly age: number){
 
-    private lastReport: string;
-    private static instance: AccountinDepartment;//store classs instace
-
-    get mostRecentReport (){
-        //some logic
-        if(this.lastReport){
-            return  this.lastReport;
-        }
-        throw new Error('No report found.');
     }
-
-    describe(){
-        console.log('Accounting department -id:' +  this.id);
-    }
-
-    set mostRecentReport(value: string){
-        if(!value){ 
-            throw new Error('please add a report');
-        }
-        this.addReport(value);
-    }
-
-    private constructor(id: string, private reports: string[]) {
-        super(id, 'ACCOUNTING')
-        this.lastReport = reports[0];
-    }
-
-    static getInstance(){
-        if(this.instance){//when inside static its ok
-            return this.instance;
-        }
-        //wil only run once
-        this.instance = new AccountinDepartment('d2', []);
-        return this.instance;
-    }
-
-    addEmployee(name: string) {
-        if (name === 'Max') {
-            return;
-        }
-        this.employees.push(name);
-    }
-
-    addReport(text: string) {
-        this.reports.push(text);
-        this.lastReport = text;
-    }
-
-    printReports() {
-        console.log(this.reports);
+    //interface has no concreet implementations parts
+    greet(phrase: string){
+        console.log(this.age);
+        console.log(phrase);
     }
 }
 
-const it = new ItDepartment('D2', ['MaXITO']);
+let user1: Greetable;
 
-// console.log(it);
-// it.hell();
-// const accountingCpy = {name: 'DUMMY', describe: it.describe, hell: it.hell};
-// accountingCpy.describe();//el contexto del this cambi
-// //a a it a este objecto
-// accountingCpy.hell();
+user1 = new Persons('Maximum', 30);
 
-it.addEmployee('Hector');
-it.addEmployee('Manu');
-//it.employees[2] = 'Anna'; 
+user1.greet('Hector');
+ 
 
 
-it.describe();
-it.name = 'NEW NAME';
-it.printEmployeeInformation();
-console.log(it);
-
-const accounting_object = AccountinDepartment.getInstance();
-console.log(AccountinDepartment.getInstance() == AccountinDepartment.getInstance());
-accounting_object.mostRecentReport = 'hello'
-accounting_object.addReport('Something went wrong...');
-console.log(accounting_object.mostRecentReport);
-accounting_object.addEmployee('MANU');
-accounting_object.printReports();
-accounting_object.printEmployeeInformation();
-
-
-//Static Method
-const x = Department.createEmployee('BEBESITO');
-console.log(x);
-console.log(Department.fiscalYear);
-
-
-//Abstract Classes
-accounting_object.describe();
+console.log(user1);
