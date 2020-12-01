@@ -35,7 +35,6 @@ function add_(a: Combinable, b: Combinable){
     if(typeof a === 'string' && typeof b === 'string'){
         return a + b;
     }//checking at runtime the type on runtime...
-
    return (a as number) + (b as number);
 }
 
@@ -151,6 +150,18 @@ const errorBad: ErrorContainer = {
 };
 
 
+//Optional Chaining
+const fetchedUserData = {
+    //we dont know if job will be available
+    id: 'u1',
+    name: 'max',
+    job: {title: 'CEO', description: 'My own Company'}// we dont know if its definey
+};
+
+//Javascript to Avoid Runtime Errors
+//console.log(fetchedUserData.job && fetchedUserData.job.title);
+//typescript way... Chaining operatro
+console.log(fetchedUserData?.job?.title);
 
 
 
