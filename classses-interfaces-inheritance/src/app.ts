@@ -121,5 +121,16 @@ function moveAnimal(animal: Animal){
     }
     console.log('Moving at speed: ' +  speed);
 }
-
 moveAnimal({type:'bird', flyingSpeed: 10 });
+
+//Type Casting
+//WAY 1
+//const userInputElement = <HTMLInputElement>document.getElementById('user-input');
+//Way 2
+const userInputElement = document.getElementById('user-input')! as HTMLInputElement;
+userInputElement.value = 'hi there';
+
+
+
+ 
+
