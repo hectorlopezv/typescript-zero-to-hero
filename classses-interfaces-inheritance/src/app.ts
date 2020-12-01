@@ -62,19 +62,76 @@ console.log(countAndDescibe(['sports', 'Cooking']));
 function extractAndConvert<T extends object, U extends keyof T>(obj: T, key: U){
     return 'Value: ' + obj[key];//we dont know if that object will have that key 
 };
-
-
 console.log(extractAndConvert({name: 'hector'}, 'name'));
 
+//GENERIC CLASESS 
+
+class DataStorage<T extends string | number | boolean> {
+    private data: T[]  = [];
+
+    addItem/*<U>*/(item: T){
+        this.data.push(item);
+    }
+
+    removeItem(item: T){
+        
+        this.data.splice(this.data.indexOf(item), 1);
+    }
+
+    getItems(){
+        return [...this.data];
+    }
+}
+
+const textStorage = new DataStorage<string>();
+textStorage.addItem('Hector');
+textStorage.addItem('Manu');
+textStorage.addItem('Max');
+console.log(textStorage.getItems());
 
 
+const numberStorage = new DataStorage<number | string>();
+numberStorage.addItem('Hector');
 
+// const objStorage = new DataStorage<Object>();
+// objStorage.addItem({name:'Max'});
+// objStorage.addItem({name:'Manu'});
 
+// objStorage.removeItem({name:'Max'});
 
-
+// console.log(objStorage.getItems());
 
 
 
 
  
+//GENERIC UTILITY TYPES
+
+//Partial
+
+interface CourseGoal{
+    title: string;
+    description: string;
+    completeUntil: Date;
+}
+
+function createCourseGoal(title: string, description:string, date:Date):CourseGoal{
+    //Partials
+    let courseGoal: Partial<CourseGoal> = {};//make all properties optional
+
+    courseGoal.title = title;
+    courseGoal.description = description;
+    courseGoal.completeUntil = date;
+
+    return courseGoal as CourseGoal;
+
+}
+
+//Readonly Generic Types ... make type readonly
+const nombres: Readonly<string[]> = ['Max', 'Anna'];
+//nombres.push('Manu');
+// nombres.pop();
+
+ //union types when you want to have multiple options in every function call
+ // generic types WHEN you want to block a certain type on a function or Class
 
