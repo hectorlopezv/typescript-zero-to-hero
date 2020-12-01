@@ -27,14 +27,20 @@ type Universal = Combinable & Numeric;
 
 const num1: Universal = 10;
 
-//USED AS TYPED GUARDS... to know type whe are getting at runtime
+
+//Function Overload
+//USED AS TYPED GUARDS... to know type whe are getting at runtime 
+function add_(a:number, b:number):number
 function add_(a: Combinable, b: Combinable){
     if(typeof a === 'string' && typeof b === 'string'){
-        return a.toString() + b.toString();
+        return a + b;
     }//checking at runtime the type on runtime...
 
-    return 1;
+   return (a as number) + (b as number);
 }
+
+const result_ = add_(2, 3);
+
 
 type unKnowEmployee = Employee | Admin;
 
@@ -129,6 +135,22 @@ moveAnimal({type:'bird', flyingSpeed: 10 });
 //Way 2
 const userInputElement = document.getElementById('user-input')! as HTMLInputElement;
 userInputElement.value = 'hi there';
+
+
+//Index Properties
+interface ErrorContainer { //{email: 'not a valid email', username: 'not a valid'}
+    //only hold dynamic properties.
+    id:string;//add with the same type
+    [prop: string]: string;//get any property string with string value
+}
+
+const errorBad: ErrorContainer = {
+    id: 'hector',
+    email: 'not a valid email',
+    username: 'Must start with a capital character'
+};
+
+
 
 
 
