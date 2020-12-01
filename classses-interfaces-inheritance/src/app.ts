@@ -1,167 +1,48 @@
-//Intersection Types
-type Admin = {
-    name: string;
-    privileges: string[];
+//Generics types
+//arrays are generics
+//certain type connected to another type
+//we want to know with type if that another type is for better ts support 
+
+//Example 1
+const names: Array<string> = ['MAX', 'Manuel'];
+names[0].split(' ');
+
+//Example 2
+//Promise Type contains another type
+//Telling it will yiled an string to get better ts support
+const promise:Promise<string> = new Promise((resolve, _) =>{
+    setTimeout(() =>{
+        resolve('this is done!');
+    }, 2000);
+});
+
+promise.then((response) =>{
+    response.split(' ');
+});
+
+//Creating a Generic Function
+//Tells to intersection Types of parameters T & U
+//telling that it can be of diferrent types
+function merge<T, U>(objA:T, objB:U){//we dont know exactly what the type shold be
+    //usefull in objects, T, U  types are set dinamically 
+    return Object.assign(objA, objB);//return new object
 };
-
-type Employee = {
-    name: string;
-    startDate: Date;
-};
-
-//Interface Way
-//interface ElevatedEmployee extends Employee, Admin {}
-
-type ElevatedEmployee =  Admin & Employee;
-
-const e1: ElevatedEmployee = {
-    name: 'Hector',
-    privileges: ['create-server'],
-    startDate: new Date()
-};
-
-type Combinable = string | number;
-type Numeric = number | boolean;
-//adition of two types and only get intersection...
-type Universal = Combinable & Numeric;
-
-const num1: Universal = 10;
-
-
-//Function Overload
-//USED AS TYPED GUARDS... to know type whe are getting at runtime 
-function add_(a:number, b:number):number
-function add_(a: Combinable, b: Combinable){
-    if(typeof a === 'string' && typeof b === 'string'){
-        return a + b;
-    }//checking at runtime the type on runtime...
-   return (a as number) + (b as number);
-}
-
-const result_ = add_(2, 3);
-
-
-type unKnowEmployee = Employee | Admin;
-
-function printEmployeeInformation(emp: unKnowEmployee){
-    console.log('Name: ' + emp.name);
-    //type Guard come to the rescue usual typeguard does not work in objects
-    if('privileges' in emp){//check if property exists
-        console.log('Privilages: ' + emp.privileges);//this not alw ayas exist on args
-    }
-
-    if('startDate' in emp){
-        console.log('Start Date: ' + emp.startDate)
-    }
-}
-
-printEmployeeInformation(e1);//e1 Employee & Admin
-
-//Type in classses
-class Car{
-    drive(){
-        console.log('Driving...');
-    }
-}
-
-class Truck {
-    drive(){
-        console.log('Driving a truck...');
-    }
-
-    loadCargo(amount: number){
-        console.log('loading cargo ...' + amount);
-    }
-}
-
-type Vehicle = Car | Truck;
-
-const v1 =  new Car();
-
-const v2 = new Truck();
-
-function useVehicle(vehicle: Vehicle){
-
-    vehicle.drive();
-    //check if method exists in methods
-    //method 1
-    //if('loadCargo' in vehicle){
-     //   vehicle.loadCargo(2000);
-    //}
-    //method 2
-    if(vehicle instanceof Truck){//check if instance and execute code only if
-        vehicle.loadCargo(2000);
-    }
-    
-}
-
-
-//Discriminates uinions
-
-interface Bird{
-    type: 'bird';//Literal type asigment Creating descraminating union
-    flyingSpeed: number;
-}
-
-
-interface Horse {
-    type: 'horse';
-    runningSpeed: number;
-}
-
-type Animal = Bird | Horse;
+const mergeObj2 = merge({name: 'Max', hobbies: ['Sports']}, {age: 30});
+//tell what type FOR T,U for that function call... on the generic Function
+//const mergeObj = merge<string, number>({name: 'Max'}, {age: 20});
+//types infers the value for T, U... BUT WE CAN DOIT MANUALLY
+const mergeObj = merge<{name:string}, {age: number}>({name: 'Max'}, {age: 20});
+console.log(mergeObj.age);
+console.log(mergeObj2);
 
 
 
-//when objects that are related but have different properties and methods
-function moveAnimal(animal: Animal){
-    let speed;
-    switch(animal.type){
-        case 'bird':
-            speed = animal.flyingSpeed;
-            break;
-        case 'horse':
-            speed = animal.runningSpeed;
-            break;
-    }
-    console.log('Moving at speed: ' +  speed);
-}
-moveAnimal({type:'bird', flyingSpeed: 10 });
-
-//Type Casting
-//WAY 1
-//const userInputElement = <HTMLInputElement>document.getElementById('user-input');
-//Way 2
-const userInputElement = document.getElementById('user-input')! as HTMLInputElement;
-userInputElement.value = 'hi there';
 
 
-//Index Properties
-interface ErrorContainer { //{email: 'not a valid email', username: 'not a valid'}
-    //only hold dynamic properties.
-    id:string;//add with the same type
-    [prop: string]: string;//get any property string with string value
-}
-
-const errorBad: ErrorContainer = {
-    id: 'hector',
-    email: 'not a valid email',
-    username: 'Must start with a capital character'
-};
 
 
-//Optional Chaining
-const fetchedUserData = {
-    //we dont know if job will be available
-    id: 'u1',
-    name: 'max',
-    job: {title: 'CEO', description: 'My own Company'}// we dont know if its definey
-};
 
-//Javascript to Avoid Runtime Errors
-//console.log(fetchedUserData.job && fetchedUserData.job.title);
-//typescript way... Chaining operatro
-console.log(fetchedUserData?.job?.title);
+
 
 
 
