@@ -19,14 +19,31 @@ function loogerFactory(logString: string){//Decorator factory
 function WithTemplate(template: string, hookId: string){
     // a template and a place where it should be rendered
     console.log('WithTemplate'); 
-    return function(constructor: any){//decorators for classes, ARGUMENTS IT GET DEPENDS ON WHERE WE USED IT
+    return function<T extends {new(...args: any[]): {name: string}}>(originalConstructor: T){//decorators for classes, ARGUMENTS IT GET DEPENDS ON WHERE WE USED IT
         //extra logic
-        console.log('Rendering template');
-        const hookEl = document.getElementById(hookId);
-        const p = new constructor();//use class basically
-        if(hookEl){
-            hookEl.innerHTML = template;
-            hookEl.querySelector('h1')!.textContent = p.name;
+
+        //depending where its used we can return something 
+        //in class we can return new constrcutor or class
+
+
+        //return new value inside decorator
+        //return new class
+        //replacing new class
+        return class extends originalConstructor{//get olds Methods
+            //gogin to execute only when we instantiate the class
+            //not execute  when is defined
+            
+            //put some logic that is gogin to execute when defined
+            //changed definition BASICALLY WITH NEW LOGIC
+            constructor(..._: any[]){
+                super();
+                console.log('Rendering template');
+                const hookEl = document.getElementById(hookId);
+                if(hookEl){
+                    hookEl.innerHTML = template;
+                    hookEl.querySelector('h1')!.textContent = this.name;
+                }
+            }
         }
         
     }
@@ -60,12 +77,14 @@ function Log(target: any, propertyName: string | Symbol){//target can be anythin
     console.log('propertyName' ,propertyName);
 }
 
-function Log2(target:any, name:string, descriptor: PropertyDescriptor){
+function Log2(target:any, name:string, descriptor: PropertyDescriptor):PropertyDescriptor{
     //Accesor decorator
     console.log('Accesor Decorator!');
     console.log('target LOG2', target);
     console.log('name LOG2', name);
     console.log('descriptor LOG2', descriptor);
+    //we cant return a brand new PROPERRTY DESCRIPTOR
+    return {};
 }
 
 function Log3(target: any, name:string|Symbol, descriptor: PropertyDescriptor){
@@ -85,7 +104,7 @@ function Log4(target: any, name:string | Symbol, position: number){
     console.log('name LOG4', name);
     console.log('position LOG4', position);
 
-    
+
 }
 
 class Product {
@@ -111,3 +130,50 @@ class Product {
         return this.price_ * tax;
     }
 }
+
+//RETURN VALUES IN DECORATORS
+//CLASSES --> NEW CLASS BASICALLY TO RE-DEFINE- CLASS
+//METHOD -->   BRAND NEW PROPERTY DESCRIPTOR
+//ACCESORS --> BRAND NEW PROPERTY DESCRIPTOR
+//PROPERTIES --> IGNORE VALUE ITS RETURNED
+//PARAMETERS --> IGNORE VALUE ITS IGNORED
+
+
+function Autobind(target: any, methodName: string | Symbol, descriptor: PropertyDescriptor){
+    console.log('Method Decorator!');
+    console.log('target AutoBind', target);
+    console.log('name AutoBind', methodName);
+    console.log('position AutoBind', descriptor);
+    //WE WANT TO ADD LOGIC TO AUTOBIND
+    const originalMethod = descriptor.value;
+    const adjDescriptor:PropertyDescriptor = {
+        configurable: true,
+        enumerable: true,
+        //DEFINIMOS UN GETTER PARA EL VALOR COMO TAL(PROPERTY) 
+        //COMO SI FUERA EN UNA CLASSE
+        //PERO LO HICIMOS EN UN FUNCION 
+        //p.showMessage ejecutara GET()
+        get(){// will be bound by the object that call its
+            //will be trigger by the concrete object where we defined the get()
+            //extra logic before value its return in this case the function
+            const boundFn = originalMethod.bind(this);
+            //P.METODO ... HACE BIND AL OBJECTO QUE LO LLAMA
+            return boundFn;
+        }
+    };
+    return adjDescriptor;//overwritting new desccriptor
+    
+}
+
+class Printer {
+    message = 'This works!';
+
+    @Autobind
+     showMessage() {
+        console.log(this.message);
+    }
+}
+//Build decorator to AUTOMATIC Bind
+const p = new Printer();
+const button = document.querySelector('button')!;
+button.addEventListener('click', p.showMessage)
