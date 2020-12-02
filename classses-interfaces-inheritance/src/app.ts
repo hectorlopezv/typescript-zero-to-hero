@@ -2,6 +2,18 @@
 //template is html code that we decice to render with js
 //singleton as a store or global state managment!
 //Project State Managment
+//Drag & Drop Interfaces ---- FORCE METHODS
+interface Draggable {//Dragable Items
+    dragStartHandler(event: DragEvent):void;
+    dragEndHandler(event: DragEvent): void;
+}
+
+interface DragTarget {//Drag Target where we can drag Something
+    DragOverHandler(event: DragEvent):void;//telling its a valid Dragging target
+    dropHandler(event: DragEvent):void; //update data in UI
+    dragLeaveHandler(event: DragEvent):void; //Give Usual Feedback When Draggin
+}
+
 
 
 //Base Class
@@ -51,6 +63,7 @@ abstract class State<T> {//Clase Generica o base para cual tipo de estado
     addListener(listenerFn: Listener<T>) {
         this.listeners.push(listenerFn);
     }
+    
 }
 
 class ProjectState extends State<Project> {
@@ -71,6 +84,22 @@ class ProjectState extends State<Project> {
         return this.instance;
     }
 
+    moveProject(projectId:string, newStatus: ProjectStatus){//move ListA to ListB
+
+        const project = this.projects.find(project => project.id === projectId);
+        if(project && project.status !== newStatus){//change Status from Active to B
+            project.status = newStatus;
+            this.updateListenerSubcription();
+        }
+        
+    }
+
+
+    private updateListenerSubcription(){
+        for (const listenerFn of this.listeners) {
+            listenerFn(this.projects.slice());//execute new state
+        }
+    }
 
     addProject(title: string, description: string, numOfPeople: number) {
         
@@ -88,9 +117,8 @@ class ProjectState extends State<Project> {
         this.projects.push(newProject);
         //for the notice new Changes
         //idea is to call al listener and execute them basically\
-        for (const listenerFn of this.listeners) {
-            listenerFn(this.projects.slice());//execute new state
-        }
+        this.updateListenerSubcription();
+
     }
 }
 
@@ -98,7 +126,7 @@ class ProjectState extends State<Project> {
 const projectState_ = ProjectState.getInstance();
 console.log(projectState_);
 
-class ProjectList extends Component<HTMLDivElement, HTMLElement>{//add LI dinamically
+class ProjectList extends Component<HTMLDivElement, HTMLElement> implements DragTarget{//add LI dinamically
     assignedProjects: Project[];
     constructor(private type: 'active' | 'finished') {
         super('project-list', 'app', false, `${type}-projects`);
@@ -108,19 +136,58 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement>{//add LI dinami
         this.configure();
         this.renderContent();
     }
+
+
+    @AutoBind
+    DragOverHandler(event: DragEvent){//when enters a drageble area with the mouse
+        //console.log(event);
+        
+        if(event.dataTransfer?.types[0] === 'text/plain'){//check format
+            event.preventDefault();// default is to prevent dropping
+            const listEl = this.element.querySelector('ul')!;
+            listEl.classList.add('droppable');
+        }
+
+    };//telling its a valid Dragging target
+
+    @AutoBind
+    dropHandler(event: DragEvent){//when we Drop handler
+        const projectId = event.dataTransfer!.getData('text/plain');
+        projectState_.moveProject(projectId, 
+            this.type === 'active' ? ProjectStatus.Active : ProjectStatus.Finished);
+        //update UI
+
+
+    }; //update data in UI
+    
+    @AutoBind
+    dragLeaveHandler(_: DragEvent){//When Drag leaves 
+        //console.log(event);
+        const listEl = this.element.querySelector('ul')!;
+        listEl.classList.remove('droppable');
+
+    }; //Give Usual Feedback When Draggin
+
+
     
     private renderProjects() {
         const listEl = document.getElementById(`${this.type}-projects-list`)! as HTMLUListElement;
         while(listEl.firstChild){
             listEl.removeChild(listEl.firstChild);
         }
-        for (const Item of this.assignedProjects) {
-
+        for (const projectItem of this.assignedProjects) {
+            new ProjectItem(this.element.querySelector('ul')!.id, projectItem);
         }
     }
 
 
     configure(){
+        //listeners
+        this.element.addEventListener('dragover', this.DragOverHandler);
+        this.element.addEventListener('dragleave', this.dragLeaveHandler);
+        this.element.addEventListener('drop', this.dropHandler);
+
+
         projectState_.addListener((projects: Project[]) => {
             //Los projects pueden ser Finished || Active
             //filter the elements from 'active' 'Finished'
@@ -146,26 +213,56 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement>{//add LI dinami
 };
 
 //ProjectItem Class
-class ProjectItem extends Component<HTMLUListElement, HTMLLIElement>{//THink like React
+class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> implements  Draggable{//THink like React
     //react like component -- rendering
     //store parent
     private project: Project;
+    get persons(){//extra logic when accesing .persons
+        if(this.project.people.length === 1){
+            return '1 Person';
+        }
+        else{
+            return `${this.project.people} persons`;
+        }
+    }
 
     constructor(hostId: string, project:Project){
         super('single-project', hostId, false, project.id);
         this.project = project;
-        console.log(this.project);
+        console.log('El Project', this.project);
+        this.configure();
+        this.renderContent();
+    }
+    
+    @AutoBind
+    dragStartHandler(event: DragEvent){//not all dragEvent give .dataTransfer
+       //console.log('start', event);
+       event.dataTransfer!.setData('text/plain', this.project.id)//pass data when drop happens
+       //fetch that project from the id
+       event.dataTransfer!.effectAllowed = 'move';
+    }
+
+    
+    dragEndHandler(_: DragEvent){
+        //console.log('DragEnd', event);
+    };
+
+    mouseDownHandler(event: MouseEvent){
+        event.preventDefault();
     }
 
     renderContent(){
         //const listId = `${this.type}-projects-list`;
-        this.element.querySelector('h2')!.textContent = this.project.title;
-        this.element.querySelector('h3')!.textContent = this.project.people;
-        this.element.querySelector('p')!.textContent = this.project.description;
+        console.log('bebesito', this.element);
+        this.element.querySelector('h2')!.innerText = this.project.title;
+        this.element.querySelector('h3')!.innerText = this.persons + ' assigned';
+        this.element.querySelector('p')!.innerText = this.project.description;
     }
 
-    configure(){
-
+    configure(){//add evenet listeners of DragEvenet 
+        //...-Drag/DragStart/Draggend/DragOver/DragEnter/DragLeave/Drop
+        this.element.addEventListener('dragstart', this.dragStartHandler);
+        this.element.addEventListener('dragend', this.dragEndHandler);
     }
 }
 
@@ -248,14 +345,8 @@ class ProjectInput extends Component<HTMLDivElement, HTMLFormElement>{//get acce
         }
     }
 
-
     renderContent(){}
-
-
-
 }
-
-
 
 interface Validatable {
     value: string | number;
