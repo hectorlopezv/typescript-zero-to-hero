@@ -1,11 +1,11 @@
 
-import {Project} from '../models/project-model.js';
-import {AutoBind} from '../decorators/autobind-decorator.js';
-import {Component} from './base-component.js';
-import {ProjectStatus} from '../models/project-model.js';
-import {projectState_} from '../state/project-state.js';
-import {ProjectItem} from './project-item.js';
-import {DragTarget} from '../models/drag-drop.js';
+import {Project} from '../models/project-model';
+import {AutoBind} from '../decorators/autobind-decorator';
+import {Component} from './base-component';
+import {ProjectStatus} from '../models/project-model';
+import {projectState_} from '../state/project-state';
+import {ProjectItem} from './project-item';
+import {DragTarget} from '../models/drag-drop';
 export class ProjectList extends Component<HTMLDivElement, HTMLElement> implements DragTarget{//add LI dinamically
     assignedProjects: Project[];
     constructor(private type: 'active' | 'finished') {

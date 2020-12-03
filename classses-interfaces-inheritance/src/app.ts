@@ -6,8 +6,8 @@
 //make NameSpace available
 //telling where to find that file... in js this is broken
 
-import {ProjectInput} from './components/project-input.js';
-import {ProjectList} from './components/project-list.js';
+import {ProjectInput} from './components/project-input';
+import {ProjectList} from './components/project-list';
 //to use namespace we need to putt into the SAME NAMESPACE
 
 //Base Class

@@ -1,6 +1,6 @@
 
-import {Project} from '../models/project-model.js';
-import {ProjectStatus} from '../models/project-model.js';
+import {Project} from '../models/project-model';
+import {ProjectStatus} from '../models/project-model';
     //Listener Structure
 type Listener<T> = (items: T[]) => void;
 abstract class State<T> {//Clase Generica o base para cual tipo de estado

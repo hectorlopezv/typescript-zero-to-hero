@@ -1,9 +1,9 @@
 
 
-import {AutoBind} from '../decorators/autobind-decorator.js';
-import {Component} from './base-component.js';
-import {Validatable, validate} from '../util/validation.js';
-import {projectState_} from '../state/project-state.js';
+import {AutoBind} from '../decorators/autobind-decorator';
+import {Component} from './base-component';
+import {Validatable, validate} from '../util/validation';
+import {projectState_} from '../state/project-state';
 
 export class ProjectInput extends Component<HTMLDivElement, HTMLFormElement>{//get access to Dom AND RENDER IT
 
