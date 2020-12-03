@@ -1,5 +1,5 @@
 //DECORATORS
-import "reflect-metadata";
+
 function Looger(constructor: Function){//clases are syntactil sugar over function constructors
     console.log('Logging...');
     console.log(constructor);
@@ -175,9 +175,9 @@ class Printer {
     }
 }
 //Build decorator to AUTOMATIC Bind
-const p = new Printer();
-const button = document.querySelector('button')!;
-button.addEventListener('click', p.showMessage);
+// const p = new Printer();
+// const button = document.querySelector('button')!;
+// button.addEventListener('click', p.showMessage);
 
 
 interface ValidatorConfig {
@@ -243,86 +243,23 @@ class Course {
 
 
 
-const courseForm =  document.querySelector('form')!;
-courseForm.addEventListener('submit', event =>{
-    event.preventDefault();
-    //extract the tittle
-    const titleEl = document.querySelector('#title')! as HTMLInputElement;
-    const priceEl = document.querySelector('#price')! as HTMLInputElement;
+// const courseForm =  document.querySelector('form')!;
+// courseForm.addEventListener('submit', event =>{
+//     event.preventDefault();
+//     //extract the tittle
+//     const titleEl = document.querySelector('#title')! as HTMLInputElement;
+//     const priceEl = document.querySelector('#price')! as HTMLInputElement;
 
-    const title = titleEl.value
-    const price = +priceEl.value;
+//     const title = titleEl.value
+//     const price = +priceEl.value;
 
-    const createdCourse = new Course(title, price);
+//     const createdCourse = new Course(title, price);
 
-    if(!validate(createdCourse)){
-        throw new Error('not paso la validacion');
-    }
-    console.log(createdCourse);
+//     if(!validate(createdCourse)){
+//         throw new Error('not paso la validacion');
+//     }
+//     console.log(createdCourse);
 
-});
-
-
-const requiredMetadataKey = Symbol("required");
-function validate_(
-    target: any,
-    propertyName: string,
-    descriptor: PropertyDescriptor
-  ) {
-    let method = descriptor.value;
-    descriptor.value = function () {
-      let requiredParameters: number[] = Reflect.getOwnMetadata(
-        requiredMetadataKey,
-        target,
-        propertyName
-      );
-      if (requiredParameters) {
-        for (let parameterIndex of requiredParameters) {
-          if (
-            parameterIndex >= arguments.length ||
-            arguments[parameterIndex] === undefined
-          ) {
-            throw new Error("Missing required argument.");
-          }
-        }
-      }
-      console.log('lo del validate', method.apply(this, arguments))
-      return method.apply(this, arguments);
-    };
-  }
-function required_(target:any, propertyKey: string | symbol, parameterIndex:number){
-    console.log('El Decorator Ultimo required_ [Target]', target);
-    console.log('El Decorator Ultimo required_ [propertyName]', propertyKey);
-    console.log('El Decorator Ultimo required_ [position]', parameterIndex);
-    //check for required existing .. multiple cases
-    let existingRequiredParameters: number[];
-    existingRequiredParameters = Reflect.getOwnMetadata(
-        requiredMetadataKey, target, propertyKey) || [];
-        console.log(existingRequiredParameters);//mira si estan los parametros 
-        //push a new entry
-        existingRequiredParameters.push(parameterIndex);
-        //define new metada data
-        Reflect.defineMetadata(
-            requiredMetadataKey,
-            existingRequiredParameters,
-            target,
-            propertyKey
-        );
-}
-
-class Greeter {
-    greeting: string;
-  
-    constructor(message: string) {
-      this.greeting = message;
-    }
-  
-    @validate_
-    greet(@required_ name: string) {
-      return "Hello " + name + ", " + this.greeting;
-    }
-  }
+// });
 
 
-
-console.log(Greeter);
