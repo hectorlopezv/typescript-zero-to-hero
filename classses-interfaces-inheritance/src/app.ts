@@ -5,17 +5,11 @@
 //Drag & Drop Interfaces ---- FORCE METHODS
 //make NameSpace available
 //telling where to find that file... in js this is broken
-/// <reference path="models/drag-drop.ts" />
-/// <reference path="models/project-model.ts" />
-/// <reference path="state/project-state.ts" />
-/// <reference path="util/validation.ts" />
-/// <reference path="decorators/autobind-decorator.ts" />
-/// <reference path="components/project-input.ts" />
-/// <reference path="components/project-item.ts" />
-/// <reference path="components/project-list.ts" />
 
+import {ProjectInput} from './components/project-input.js';
+import {ProjectList} from './components/project-list.js';
 //to use namespace we need to putt into the SAME NAMESPACE
-namespace App{
+
 //Base Class
 
 
@@ -26,7 +20,7 @@ new ProjectInput();
 
 
 
-}
+
 
 
 

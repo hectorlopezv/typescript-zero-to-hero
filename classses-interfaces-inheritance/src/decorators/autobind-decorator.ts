@@ -1,4 +1,4 @@
-namespace App {
+
 
 export function AutoBind(target: any, propertyName: string | Symbol, descriptor: PropertyDescriptor) {
     console.log('target', target);
@@ -16,4 +16,3 @@ export function AutoBind(target: any, propertyName: string | Symbol, descriptor:
     return newDescriptor;
 }
     
-}

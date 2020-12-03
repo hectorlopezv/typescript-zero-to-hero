@@ -1,4 +1,4 @@
-namespace App {
+
 export enum ProjectStatus { Active, Finished }
 //Project type
 
@@ -11,4 +11,3 @@ export class Project {//base class of what a project should look like only info
     ) { }
 }
 
-}

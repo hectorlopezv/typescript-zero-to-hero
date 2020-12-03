@@ -1,5 +1,6 @@
-namespace App {
 
+import {Project} from '../models/project-model.js';
+import {ProjectStatus} from '../models/project-model.js';
     //Listener Structure
 type Listener<T> = (items: T[]) => void;
 abstract class State<T> {//Clase Generica o base para cual tipo de estado
@@ -70,4 +71,3 @@ export class ProjectState extends State<Project> {
 
 
 export const projectState_ = ProjectState.getInstance();
-}

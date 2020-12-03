@@ -1,4 +1,4 @@
-namespace App{
+
  export interface Draggable {//Dragable Items
     dragStartHandler(event: DragEvent):void;
     dragEndHandler(event: DragEvent): void;
@@ -11,6 +11,6 @@ namespace App{
  }
 
 
-}
+
 
 
